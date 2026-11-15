@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: zad-pay
+    runtime: python
+    plan: starter            # persistent disk needs a paid plan; see README for the free-plan caveat
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: SECRET_KEY          # auto-generated once by Render, stays stable
+        generateValue: true
+      - key: DATA_DIR
+        value: /var/data
+      - key: OWNER_EMAIL
+        sync: false
+      - key: OWNER_PASSWORD
+        sync: false
+      - key: OWNER_NAME
+        value: Owner
+      - key: PUBLIC_URL          # optional; leave empty to auto-detect (RENDER_EXTERNAL_URL / custom domain headers)
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+    disk:
+      name: zad-data
+      mountPath: /var/data
+      sizeGB: 1
